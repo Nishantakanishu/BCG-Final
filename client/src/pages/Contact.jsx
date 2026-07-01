@@ -22,7 +22,7 @@ export default function Contact() {
   return (
     <div className=''>
       <section className="hero-section" >
-        <IntroSection text={"Lets Talk"} />
+        <IntroSection text={"Let's Talk"} />
       </section >
 
       <section className="py-10">

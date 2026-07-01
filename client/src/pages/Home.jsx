@@ -2,11 +2,12 @@ import bg from "../assets/bg.jpg"
 import CategoryCard from "../components/CategoryCard"
 import Heading from "../components/Heading"
 import ServiceCapsule from "../components/ServiceCapsule";
-import products from "../data/products"
+import products, { imageMap } from "../data/products"
 import services from "../data/services"
+import axios from "axios";
 import NavButton from "../components/NavButton";
 import Typed from "typed.js";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react"
 import StatCircle from "../components/StateCircle";
 import ReviewCapsule from "../components/ReviewCapsule";
@@ -14,6 +15,23 @@ import { fadeRight, fadeUP, fadeZoomUP, stagger } from "../utils/motions"
 
 export default function Home() {
   const elementRef = useRef(null)
+  const [productsList, setProductsList] = useState(products)
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_SERVER_URL || 'http://localhost:3000'}/api/product`);
+        if (Array.isArray(data)) {
+          setProductsList(data);
+        } else {
+          console.error("API did not return an array:", data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     const typed = new Typed(elementRef.current, {
@@ -95,14 +113,14 @@ export default function Home() {
       >
         <Heading subhead={"PRODUCT RANGE"} head={"OFFERINGS"} type={"OUR"} />
         <motion.div variants={stagger} className="categories py-7 flex flex-wrap justify-center gap-5">
-          {products.map((product, index) => {
+          {productsList.map((product, index) => {
             return <motion.div key={index}
               variants={fadeUP}
               initial="hidden"
               whileInView="show"
               transition={{ duration: 0.8 }}
             >
-              <CategoryCard  {...product} />
+              <CategoryCard  {...product} url={imageMap[product.url] || product.url} />
             </motion.div>
           })}
         </motion.div>

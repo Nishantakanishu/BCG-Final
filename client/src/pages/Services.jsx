@@ -52,7 +52,7 @@ export default function Services() {
           whileInView="show"
           transition={{ duration: 0.8 }}
         >
-          Want to Know More ?
+          Want to Know More?
         </motion.div>
         <div className="email flex justify-center items-center gap-1 text-lg md:text-xl mt-1">
           <MdOutlineMail />

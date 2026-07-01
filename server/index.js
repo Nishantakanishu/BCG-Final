@@ -5,6 +5,7 @@ const connectDb = require("./utils/db")
 const adminRoute = require("./admin/admin.route")
 const contactRoute = require('./contact/contact.route')
 const authRoute = require("./auth/auth.route")
+const productRoute = require("./product/product.route")
 
 const app = express()
 const PORT = 3000
@@ -18,6 +19,7 @@ app.use(cors({
 app.use("/api/auth", authRoute)
 app.use("/api/contact", contactRoute)
 app.use("/api/admin", adminRoute)
+app.use("/api/product", productRoute)
 
 app.get("/", (req, res) => {
   res.send("hello world !")

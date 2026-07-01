@@ -7,7 +7,7 @@ module.exports.fetchAllContactData = async (req, res) => {
     return res.status(200).json(allMessages)
   } catch (error) {
     console.log(error)
-    return res.status(500).json({ messsage: "Internal Server Error !" })
+    return res.status(500).json({ message: "Internal Server Error" })
   }
 }
 
@@ -21,13 +21,13 @@ module.exports.deleteMessage = async (req, res) => {
     const data = matchedData(req)
     const message = await Contact.findById(data.id)
     if (!message) {
-      return res.status(404).json({ message: "message not found" })
+      return res.status(404).json({ message: "Message not found" })
     }
     const deleteMessage = await Contact.findByIdAndDelete(data.id)
     res.status(200).json({ message: "Message Deleted!" })
   } catch (error) {
     console.log(error)
-    res.status(500).json({ message: "Internal Server Error " })
+    res.status(500).json({ message: "Internal Server Error" })
   }
 }
 
@@ -40,12 +40,12 @@ module.exports.markAsRead = async (req, res) => {
     const data = matchedData(req)
     const message = await Contact.findById(data.id)
     if (!message) {
-      return res.status(404).json({ message: "message not found" })
+      return res.status(404).json({ message: "Message not found" })
     }
     const updatedMessage = await Contact.findByIdAndUpdate(data.id, { isRead: true }, { new: true })
-    res.status(200).json({ message: "Marked As read !" })
+    res.status(200).json({ message: "Marked as read" })
   } catch (error) {
     console.log(error)
-    res.status(500).json({ message: "Internal Server Error " })
+    res.status(500).json({ message: "Internal Server Error" })
   }
 }

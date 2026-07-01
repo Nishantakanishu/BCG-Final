@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FaEnvelope, FaLock, FaUserShield } from "react-icons/fa";
 import axios from "axios";
 import { useContextStore } from "../store/ContextStore";

@@ -9,7 +9,7 @@ export default function SignOut() {
 
   useEffect(() => {
     deleteFromLocalStorage()
-    toast.success("logged Out ", { id: "1" })
+    toast.success("Logged out", { id: "1" })
     navigate("/admin/login", { replace: true })
   }, [])
 

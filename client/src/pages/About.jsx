@@ -40,9 +40,9 @@ export default function About() {
           <div className="desc mt-5 md:mt-0 space-y-4 p-6 md:p-3">
             <h3 className="text-lg font-semibold "><span className="text-primary font-serif font-semibold text-2xl">Bright Citrine Global</span> focuses on trading in niche products.</h3>
             <p className="text-gray-900 font-serif text-justify">
-              CG specializes in international trade partnering with over 38 countries.<br />
+              BCG specializes in international trade, partnering with over 38 countries.<br />
 
-              We establish strong relationships with our clients and partners not only to provide immediate and reliable services but to continually exceed expectations and goals.We create commercial flows, import and export products, arranging and managing international projects with our partners. Our expertise in understanding the market allow us to respond to the sustained and ever evolving needs of industries for existing and newer markets.
+              We establish strong relationships with our clients and partners not only to provide immediate and reliable services but to continually exceed expectations and goals. We create commercial flows, import and export products, arranging and managing international projects with our partners. Our expertise in understanding the market allows us to respond to the sustained and ever-evolving needs of industries for existing and newer markets.
             </p>
           </div>
         </motion.div>

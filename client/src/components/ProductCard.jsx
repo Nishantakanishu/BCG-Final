@@ -10,7 +10,7 @@ export default function ProductCard({ url, name, longDesc, handleToogleForm }) {
         <p className="text-gray-900 font-serif text-justify">
           {longDesc}
         </p>
-        <button className="px-8 py-3 md:py-2 bg-primary text-white rounded-full shodow-lg cursor-pointer " onClick={handleToogleForm}>Request a Quate______</button>
+        <button className="px-8 py-3 md:py-2 bg-primary text-white rounded-full shodow-lg cursor-pointer " onClick={handleToogleForm}>Request a Quote______</button>
       </div>
     </div>
   )

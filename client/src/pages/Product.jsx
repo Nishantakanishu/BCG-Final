@@ -1,16 +1,33 @@
 import Heading from '../components/Heading'
 import IntroSection from '../components/IntroSection'
 import ProductCard from '../components/ProductCard'
-import products from '../data/products'
 import { fadeUP, stagger } from "../utils/motions"
 import { motion } from "motion/react"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import products, { imageMap } from '../data/products'
 import Form from '../components/Form'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
 export default function Product() {
   const [showForm, setShowForm] = useState(false)
+  const [productsList, setProductsList] = useState(products)
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_SERVER_URL || 'http://localhost:3000'}/api/product`);
+        if (Array.isArray(data)) {
+          setProductsList(data);
+        } else {
+          console.error("API did not return an array:", data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const handleToogleForm = () => {
     setShowForm(prev => {
@@ -49,16 +66,17 @@ export default function Product() {
       >
         <Heading subhead={"BRIGHT CITRINE GLOBAL"} head={"PRODUCTS"} type={"OUR"} />
         <motion.div variants={stagger} className="cards space-y-4 mt-10">
-          {products.map((product, index) => {
+          {productsList.map((product, index) => {
             return <motion.div key={index}
               variants={fadeUP}
               initial="hidden"
               whileInView="show"
               transition={{ duration: 0.8 }}
             >
-              <ProductCard {...product} handleToogleForm={handleToogleForm} />
+              <ProductCard {...product} url={imageMap[product.url] || product.url} handleToogleForm={handleToogleForm} />
             </motion.div>
           })}
+
         </motion.div>
       </motion.section >
 
