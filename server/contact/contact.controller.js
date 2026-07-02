@@ -12,6 +12,6 @@ module.exports.sendMessage = async (req, res) => {
     res.status(200).json({ message: "Message Sent! " })
   } catch (error) {
     console.error(error)
-    res.send(500).json("Internal server error")
+    res.status(500).json({ message: "Internal server error" })
   }
 }

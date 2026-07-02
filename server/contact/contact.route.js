@@ -12,8 +12,13 @@ router.route("/").post(
     .isEmail().withMessage("email field must be an email "),
   body("phone")
     .notEmpty().withMessage("phone can't be empty")
-    .isString().withMessage("phone should be string ")
-    .isLength(10).withMessage("phone must have 10 digit"),
+    .custom((value) => {
+      const valStr = String(value).trim();
+      if (valStr.length !== 10) {
+        throw new Error("phone must have 10 digits");
+      }
+      return true;
+    }),
   body("subject")
     .notEmpty().withMessage("subject can't be empty")
     .isString().withMessage("subject must be string "),
