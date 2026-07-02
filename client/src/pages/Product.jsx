@@ -10,7 +10,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 
 export default function Product() {
-  const [showForm, setShowForm] = useState(false)
+  const [showForm, setShowForm] = useState(null)
   const [productsList, setProductsList] = useState(products)
 
   useEffect(() => {
@@ -29,13 +29,15 @@ export default function Product() {
     fetchProducts();
   }, []);
 
-  const handleToogleForm = () => {
+  const handleToogleForm = (productName) => {
     setShowForm(prev => {
-      (prev)
-        ? document.body.classList.remove("stop-scroll")
-        : document.body.classList.add("stop-scroll");
-
-      return !prev
+      const nextState = prev ? null : (productName || "General Inquiry");
+      if (nextState) {
+        document.body.classList.add("stop-scroll");
+      } else {
+        document.body.classList.remove("stop-scroll");
+      }
+      return nextState;
     })
   }
 
@@ -81,7 +83,12 @@ export default function Product() {
       </motion.section >
 
       {showForm && <section className="form fixed inset-0 w-full min-h-screen bg-white pt-10 md:pt-25 overflow-scroll">
-        <Form text={"Request a quote"} handleOnSubmit={handleOnSubmit} handleToogleForm={handleToogleForm} />
+        <Form 
+          text={`Request a quote for ${showForm}`} 
+          defaultSubject={`Quote Request: ${showForm}`}
+          handleOnSubmit={handleOnSubmit} 
+          handleToogleForm={handleToogleForm} 
+        />
       </section>}
 
     </div>

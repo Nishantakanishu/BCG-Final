@@ -1,35 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { FaEnvelopeOpenText, FaSignOutAlt } from "react-icons/fa";
-import Message from "../components/Message";
+import { FaEnvelopeOpenText, FaSignOutAlt, FaFolderOpen, FaInbox, FaTag, FaPhoneAlt, FaEnvelope, FaTrash, FaCheckCircle, FaCalendarAlt } from "react-icons/fa";
 import axios from "axios";
 import { useContextStore } from "../store/ContextStore";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import toast from "react-hot-toast";
 
 export default function AdminMessages() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("quotes"); // 'quotes' or 'general'
+  const [selectedProductFilter, setSelectedProductFilter] = useState("all");
 
-  const { token, logout } = useContextStore();
-  const navigate = useNavigate();
-
-  const filteredMessages = messages
-    .filter((msg) => {
-      if (filter === "read") return msg.isRead;
-      if (filter === "unread") return !msg.isRead;
-      return true;
-    })
-    .filter(
-      (msg) =>
-        msg.name.toLowerCase().includes(search.toLowerCase()) ||
-        msg.subject.toLowerCase().includes(search.toLowerCase())
-    );
+  const { token } = useContextStore();
 
   const fetchMessages = async (silent = false) => {
     if (!silent) setLoading(true);
-
     try {
       const { data } = await axios.get(
         `${import.meta.env.VITE_SERVER_URL}/api/admin/contact`,
@@ -46,7 +32,6 @@ export default function AdminMessages() {
       if (!silent) setLoading(false);
     }
   };
-
 
   const handleToggleRead = async (id) => {
     setMessages((prev) =>
@@ -93,9 +78,8 @@ export default function AdminMessages() {
 
   useEffect(() => {
     fetchMessages();
-
     const interval = setInterval(() => {
-      if (search) return
+      if (search) return;
       fetchMessages(true);
     }, 10000);
 
@@ -106,41 +90,99 @@ export default function AdminMessages() {
       clearInterval(interval);
       window.removeEventListener("focus", onFocus);
     };
-  }, []);
+  }, [search]);
 
+  // Helper to categorize messages
+  const getCategorizedMessages = () => {
+    const quotes = [];
+    const general = [];
+
+    messages.forEach((msg) => {
+      // Check if subject indicates a product quote request
+      const isQuote = msg.subject.toLowerCase().includes("quote request") || 
+                      msg.subject.toLowerCase().includes("request a quote");
+      
+      // Attempt to parse product name
+      let productName = "Other Products";
+      if (isQuote) {
+        const parts = msg.subject.split(":");
+        if (parts.length > 1) {
+          productName = parts[1].trim();
+        }
+      }
+
+      const msgWithCategory = { ...msg, productName, isQuote };
+
+      if (isQuote) {
+        quotes.push(msgWithCategory);
+      } else {
+        general.push(msgWithCategory);
+      }
+    });
+
+    return { quotes, general };
+  };
+
+  const { quotes, general } = getCategorizedMessages();
+
+  // Get list of unique products from quotes
+  const uniqueProducts = ["all", ...new Set(quotes.map((q) => q.productName))];
+
+  // Filtering based on search and tab
+  const getFilteredData = () => {
+    const currentList = activeTab === "quotes" ? quotes : general;
+    
+    return currentList
+      .filter((msg) => {
+        if (activeTab === "quotes" && selectedProductFilter !== "all") {
+          return msg.productName === selectedProductFilter;
+        }
+        return true;
+      })
+      .filter(
+        (msg) =>
+          msg.name.toLowerCase().includes(search.toLowerCase()) ||
+          msg.subject.toLowerCase().includes(search.toLowerCase()) ||
+          msg.email.toLowerCase().includes(search.toLowerCase())
+      );
+  };
+
+  const filteredList = getFilteredData();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading messages...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <p className="text-gray-500 font-medium">Loading messages...</p>
       </div>
     );
   }
 
   return (
-    <div className="p-2 md:px-6 pt-24 min-h-[90vh] max-w-6xl mx-auto space-y-6">
-
+    <div className="p-4 md:p-8 pt-24 min-h-screen max-w-7xl mx-auto space-y-8 bg-gray-50">
+      
       {/* Header */}
-      <div className="flex px-4 flex-wrap gap-4 justify-between items-center">
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
         <div className="flex items-center gap-3">
-          <FaEnvelopeOpenText className="text-primary text-3xl" />
-          <h1 className="text-3xl font-semibold">Contact Messages</h1>
+          <div className="p-3 bg-primary/10 rounded-2xl">
+            <FaEnvelopeOpenText className="text-primary text-3xl" />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <p className="text-sm text-gray-500">Manage client product quotes and general inquiries</p>
+          </div>
         </div>
 
-        <div className="flex items-center w-full justify-between gap-3">
-          {/* Search */}
+        <div className="flex items-center gap-3 w-full md:w-auto">
           <input
             type="text"
-            placeholder="Search by name or subject..."
-            className="px-4 w-72 py-2 rounded-xl bg-gray-100 outline-slate-300 border border-gray-300"
+            placeholder="Search by name, email, or subject..."
+            className="px-4 py-2.5 w-full md:w-80 rounded-2xl bg-gray-100 border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-
-          {/* Logout */}
           <NavLink
             to="/signout"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition shadow-sm"
           >
             <FaSignOutAlt />
             Logout
@@ -148,38 +190,179 @@ export default function AdminMessages() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex px-4 gap-3">
-        {["all", "unread", "read"].map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition
-              ${filter === f
-                ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+      {/* Tabs Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        {/* Sidebar / Left Column */}
+        <div className="space-y-6">
+          <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 space-y-2">
+            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2 mb-3">Folders</h2>
+            
+            <button
+              onClick={() => { setActiveTab("quotes"); setSelectedProductFilter("all"); }}
+              className={`w-full flex items-center justify-between p-3 rounded-2xl text-sm font-semibold transition ${
+                activeTab === "quotes"
+                  ? "bg-primary text-white"
+                  : "text-gray-600 hover:bg-gray-50"
               }`}
-          >
-            {f.toUpperCase()}
-          </button>
-        ))}
-      </div>
+            >
+              <span className="flex items-center gap-3">
+                <FaFolderOpen /> Product Quotes
+              </span>
+              <span className={`px-2 py-0.5 text-xs rounded-full ${
+                activeTab === "quotes" ? "bg-white/20 text-white" : "bg-gray-100 text-gray-600"
+              }`}>{quotes.length}</span>
+            </button>
 
-      {/* Messages */}
-      {filteredMessages.length === 0 ? (
-        <p className="text-gray-500 text-center">No messages found.</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {filteredMessages.map((msg) => (
-            <Message
-              key={msg._id}
-              data={msg}
-              onDelete={handleDelete}
-              onToggleRead={handleToggleRead}
-            />
-          ))}
+            <button
+              onClick={() => setActiveTab("general")}
+              className={`w-full flex items-center justify-between p-3 rounded-2xl text-sm font-semibold transition ${
+                activeTab === "general"
+                  ? "bg-primary text-white"
+                  : "text-gray-600 hover:bg-gray-50"
+              }`}
+            >
+              <span className="flex items-center gap-3">
+                <FaInbox /> General Inquiries
+              </span>
+              <span className={`px-2 py-0.5 text-xs rounded-full ${
+                activeTab === "general" ? "bg-white/20 text-white" : "bg-gray-100 text-gray-600"
+              }`}>{general.length}</span>
+            </button>
+          </div>
+
+          {/* Product Filter Sidebar - only visible when quotes tab is active */}
+          {activeTab === "quotes" && (
+            <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 space-y-2">
+              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2 mb-3">Filter by Product</h2>
+              {uniqueProducts.map((prod) => (
+                <button
+                  key={prod}
+                  onClick={() => setSelectedProductFilter(prod)}
+                  className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-medium transition capitalize ${
+                    selectedProductFilter === prod
+                      ? "bg-primary/10 text-primary font-bold"
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <FaTag className="text-[10px]" /> {prod}
+                  </span>
+                  <span className="text-[10px] text-gray-400">
+                    ({prod === "all" ? quotes.length : quotes.filter(q => q.productName === prod).length})
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Messages List / Right Column */}
+        <div className="lg:col-span-3 space-y-6">
+          <div className="flex justify-between items-center px-2">
+            <h2 className="text-xl font-bold text-gray-800 capitalize">
+              {activeTab === "quotes" ? "Product Quote Requests" : "General Inquiries"}
+              {activeTab === "quotes" && selectedProductFilter !== "all" && ` - ${selectedProductFilter}`}
+            </h2>
+            <span className="text-sm text-gray-500">{filteredList.length} Messages</span>
+          </div>
+
+          {filteredList.length === 0 ? (
+            <div className="bg-white p-12 rounded-3xl border border-gray-100 text-center space-y-3">
+              <p className="text-gray-500 font-medium">No messages found in this category.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredList.map((msg) => (
+                <div
+                  key={msg._id}
+                  className={`bg-white rounded-3xl p-6 border transition-all duration-300 shadow-sm hover:shadow-md ${
+                    msg.isRead ? "border-gray-200/60" : "border-primary/30 ring-1 ring-primary/5"
+                  }`}
+                >
+                  {/* Message Header */}
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-gray-900 text-lg">{msg.name}</h3>
+                        {!msg.isRead && (
+                          <span className="bg-primary text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold tracking-wider">
+                            NEW
+                          </span>
+                        )}
+                        {msg.isQuote && (
+                          <span className="bg-amber-100 text-amber-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold tracking-wider uppercase">
+                            Quote Request
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-500 font-semibold mt-1">
+                        Subject: <span className="text-gray-700 capitalize">{msg.subject}</span>
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-4 text-sm text-gray-400">
+                      <span className="flex items-center gap-1.5 font-medium">
+                        <FaCalendarAlt />
+                        {new Date(msg.createdAt).toLocaleString()}
+                      </span>
+                      <button
+                        onClick={() => handleDelete(msg._id)}
+                        className="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-500 hover:text-red-600 transition cursor-pointer"
+                        title="Delete message"
+                      >
+                        <FaTrash className="text-sm" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Message Body & Contact Details */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Left Column: Contact details */}
+                    <div className="bg-gray-50 p-4 rounded-2xl space-y-3 border border-gray-100">
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Sender Info</h4>
+                      <a
+                        href={`mailto:${msg.email}`}
+                        className="flex items-center gap-2.5 text-sm text-gray-600 hover:text-primary transition font-medium"
+                      >
+                        <FaEnvelope className="text-gray-400" />
+                        {msg.email}
+                      </a>
+                      <p className="flex items-center gap-2.5 text-sm text-gray-600 font-medium">
+                        <FaPhoneAlt className="text-gray-400" />
+                        {msg.phone}
+                      </p>
+                    </div>
+
+                    {/* Right Column: Full Message */}
+                    <div className="md:col-span-2 space-y-3">
+                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Message Content</h4>
+                      <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100/80 min-h-[80px]">
+                        <p className="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed">
+                          {msg.message || <span className="text-gray-400 italic">No message content provided.</span>}
+                        </p>
+                      </div>
+
+                      {/* Action buttons */}
+                      {!msg.isRead && (
+                        <div className="flex justify-end pt-2">
+                          <button
+                            onClick={() => handleToggleRead(msg._id)}
+                            className="inline-flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-full bg-green-600 hover:bg-green-700 text-white transition shadow-sm cursor-pointer"
+                          >
+                            <FaCheckCircle />
+                            Mark as Read
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

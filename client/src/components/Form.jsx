@@ -3,13 +3,17 @@ import Input from "./Input";
 import { FaUser, FaEnvelope, FaPhoneAlt, FaPen } from "react-icons/fa";
 import Spinner from "./Spinner";
 
-export default function Form({ text, handleOnSubmit, handleToogleForm }) {
+export default function Form({ text, defaultSubject, handleOnSubmit, handleToogleForm }) {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting }
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      subject: defaultSubject || ""
+    }
+  });
 
   const onSubmit = async (data) => {
     const result = await handleOnSubmit(data)
