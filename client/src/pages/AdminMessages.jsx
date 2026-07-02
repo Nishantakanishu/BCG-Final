@@ -125,29 +125,28 @@ export default function AdminMessages() {
 
   const { quotes, general } = getCategorizedMessages();
 
-  // Get list of unique products from quotes
-  const uniqueProducts = ["all", ...new Set(quotes.map((q) => q.productName))];
-
-  // Filtering based on search and tab
-  const getFilteredData = () => {
-    const currentList = activeTab === "quotes" ? quotes : general;
-    
-    return currentList
-      .filter((msg) => {
-        if (activeTab === "quotes" && selectedProductFilter !== "all") {
-          return msg.productName === selectedProductFilter;
-        }
-        return true;
-      })
-      .filter(
-        (msg) =>
-          msg.name.toLowerCase().includes(search.toLowerCase()) ||
-          msg.subject.toLowerCase().includes(search.toLowerCase()) ||
-          msg.email.toLowerCase().includes(search.toLowerCase())
-      );
+  // Filter quotes or general by search query
+  const getFilteredList = (list) => {
+    return list.filter(
+      (msg) =>
+        msg.name.toLowerCase().includes(search.toLowerCase()) ||
+        msg.subject.toLowerCase().includes(search.toLowerCase()) ||
+        msg.email.toLowerCase().includes(search.toLowerCase())
+    );
   };
 
-  const filteredList = getFilteredData();
+  const filteredQuotes = getFilteredList(quotes);
+  const filteredGeneral = getFilteredList(general);
+
+  // Group filtered quotes by product name
+  const groupedQuotes = filteredQuotes.reduce((groups, quote) => {
+    const prodName = quote.productName;
+    if (!groups[prodName]) {
+      groups[prodName] = [];
+    }
+    groups[prodName].push(quote);
+    return groups;
+  }, {});
 
   if (loading) {
     return (
@@ -199,7 +198,7 @@ export default function AdminMessages() {
             <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2 mb-3">Folders</h2>
             
             <button
-              onClick={() => { setActiveTab("quotes"); setSelectedProductFilter("all"); }}
+              onClick={() => setActiveTab("quotes")}
               className={`w-full flex items-center justify-between p-3 rounded-2xl text-sm font-semibold transition ${
                 activeTab === "quotes"
                   ? "bg-primary text-white"
@@ -230,31 +229,6 @@ export default function AdminMessages() {
               }`}>{general.length}</span>
             </button>
           </div>
-
-          {/* Product Filter Sidebar - only visible when quotes tab is active */}
-          {activeTab === "quotes" && (
-            <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 space-y-2">
-              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider px-2 mb-3">Filter by Product</h2>
-              {uniqueProducts.map((prod) => (
-                <button
-                  key={prod}
-                  onClick={() => setSelectedProductFilter(prod)}
-                  className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs font-medium transition capitalize ${
-                    selectedProductFilter === prod
-                      ? "bg-primary/10 text-primary font-bold"
-                      : "text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <FaTag className="text-[10px]" /> {prod}
-                  </span>
-                  <span className="text-[10px] text-gray-400">
-                    ({prod === "all" ? quotes.length : quotes.filter(q => q.productName === prod).length})
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Messages List / Right Column */}
@@ -262,104 +236,212 @@ export default function AdminMessages() {
           <div className="flex justify-between items-center px-2">
             <h2 className="text-xl font-bold text-gray-800 capitalize">
               {activeTab === "quotes" ? "Product Quote Requests" : "General Inquiries"}
-              {activeTab === "quotes" && selectedProductFilter !== "all" && ` - ${selectedProductFilter}`}
             </h2>
-            <span className="text-sm text-gray-500">{filteredList.length} Messages</span>
+            <span className="text-sm text-gray-500">
+              {activeTab === "quotes" ? filteredQuotes.length : filteredGeneral.length} Messages
+            </span>
           </div>
 
-          {filteredList.length === 0 ? (
-            <div className="bg-white p-12 rounded-3xl border border-gray-100 text-center space-y-3">
-              <p className="text-gray-500 font-medium">No messages found in this category.</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredList.map((msg) => (
-                <div
-                  key={msg._id}
-                  className={`bg-white rounded-3xl p-6 border transition-all duration-300 shadow-sm hover:shadow-md ${
-                    msg.isRead ? "border-gray-200/60" : "border-primary/30 ring-1 ring-primary/5"
-                  }`}
-                >
-                  {/* Message Header */}
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-gray-900 text-lg">{msg.name}</h3>
-                        {!msg.isRead && (
-                          <span className="bg-primary text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold tracking-wider">
-                            NEW
-                          </span>
-                        )}
-                        {msg.isQuote && (
-                          <span className="bg-amber-100 text-amber-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold tracking-wider uppercase">
-                            Quote Request
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-500 font-semibold mt-1">
-                        Subject: <span className="text-gray-700 capitalize">{msg.subject}</span>
-                      </p>
+          {activeTab === "quotes" ? (
+            /* PRODUCT QUOTES VIEW (GROUPED BY PRODUCT) */
+            Object.keys(groupedQuotes).length === 0 ? (
+              <div className="bg-white p-12 rounded-3xl border border-gray-100 text-center">
+                <p className="text-gray-500 font-medium">No quote requests found.</p>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {Object.entries(groupedQuotes).map(([productName, productQuotes]) => (
+                  <div key={productName} className="space-y-4">
+                    {/* Product Group Header */}
+                    <div className="flex items-center gap-2 border-b border-gray-200 pb-2">
+                      <FaTag className="text-primary text-sm" />
+                      <h3 className="text-lg font-bold text-gray-900 capitalize">
+                        {productName} 
+                        <span className="ml-2 text-xs font-semibold px-2 py-0.5 bg-primary/10 text-primary rounded-full">
+                          {productQuotes.length} {productQuotes.length === 1 ? "request" : "requests"}
+                        </span>
+                      </h3>
                     </div>
 
-                    <div className="flex items-center gap-4 text-sm text-gray-400">
-                      <span className="flex items-center gap-1.5 font-medium">
-                        <FaCalendarAlt />
-                        {new Date(msg.createdAt).toLocaleString()}
-                      </span>
-                      <button
-                        onClick={() => handleDelete(msg._id)}
-                        className="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-500 hover:text-red-600 transition cursor-pointer"
-                        title="Delete message"
-                      >
-                        <FaTrash className="text-sm" />
-                      </button>
+                    {/* Product Requests List */}
+                    <div className="space-y-4">
+                      {productQuotes.map((msg) => (
+                        <div
+                          key={msg._id}
+                          className={`bg-white rounded-3xl p-6 border transition-all duration-300 shadow-sm hover:shadow-md ${
+                            msg.isRead ? "border-gray-200/60" : "border-primary/30 ring-1 ring-primary/5"
+                          }`}
+                        >
+                          {/* Message Header */}
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-bold text-gray-900 text-base">{msg.name}</h4>
+                                {!msg.isRead && (
+                                  <span className="bg-primary text-white text-[9px] px-2 py-0.5 rounded-full font-bold tracking-wider">
+                                    NEW
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-gray-500 font-medium mt-1">
+                                Subject: <span className="text-gray-700 capitalize">{msg.subject}</span>
+                              </p>
+                            </div>
+
+                            <div className="flex items-center gap-4 text-xs text-gray-400">
+                              <span className="flex items-center gap-1.5 font-medium">
+                                <FaCalendarAlt />
+                                {new Date(msg.createdAt).toLocaleString()}
+                              </span>
+                              <button
+                                onClick={() => handleDelete(msg._id)}
+                                className="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-500 hover:text-red-600 transition cursor-pointer"
+                                title="Delete message"
+                              >
+                                <FaTrash className="text-xs" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Message Body & Contact Details */}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Left Column: Contact details */}
+                            <div className="bg-gray-50 p-4 rounded-2xl space-y-3 border border-gray-100">
+                              <h5 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Sender Info</h5>
+                              <a
+                                href={`mailto:${msg.email}`}
+                                className="flex items-center gap-2 text-xs text-gray-600 hover:text-primary transition font-medium"
+                              >
+                                <FaEnvelope className="text-gray-400" />
+                                {msg.email}
+                              </a>
+                              <p className="flex items-center gap-2 text-xs text-gray-600 font-medium">
+                                <FaPhoneAlt className="text-gray-400" />
+                                {msg.phone}
+                              </p>
+                            </div>
+
+                            {/* Right Column: Full Message */}
+                            <div className="md:col-span-2 space-y-3">
+                              <h5 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Message Content</h5>
+                              <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100/80 min-h-[60px]">
+                                <p className="text-gray-700 text-xs whitespace-pre-wrap leading-relaxed">
+                                  {msg.message || <span className="text-gray-400 italic">No message content provided.</span>}
+                                </p>
+                              </div>
+
+                              {/* Action buttons */}
+                              {!msg.isRead && (
+                                <div className="flex justify-end pt-2">
+                                  <button
+                                    onClick={() => handleToggleRead(msg._id)}
+                                    className="inline-flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-full bg-green-600 hover:bg-green-700 text-white transition shadow-sm cursor-pointer"
+                                  >
+                                    <FaCheckCircle />
+                                    Mark as Read
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-
-                  {/* Message Body & Contact Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Left Column: Contact details */}
-                    <div className="bg-gray-50 p-4 rounded-2xl space-y-3 border border-gray-100">
-                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Sender Info</h4>
-                      <a
-                        href={`mailto:${msg.email}`}
-                        className="flex items-center gap-2.5 text-sm text-gray-600 hover:text-primary transition font-medium"
-                      >
-                        <FaEnvelope className="text-gray-400" />
-                        {msg.email}
-                      </a>
-                      <p className="flex items-center gap-2.5 text-sm text-gray-600 font-medium">
-                        <FaPhoneAlt className="text-gray-400" />
-                        {msg.phone}
-                      </p>
-                    </div>
-
-                    {/* Right Column: Full Message */}
-                    <div className="md:col-span-2 space-y-3">
-                      <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Message Content</h4>
-                      <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100/80 min-h-[80px]">
-                        <p className="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed">
-                          {msg.message || <span className="text-gray-400 italic">No message content provided.</span>}
+                ))}
+              </div>
+            )
+          ) : (
+            /* GENERAL INQUIRIES VIEW */
+            filteredGeneral.length === 0 ? (
+              <div className="bg-white p-12 rounded-3xl border border-gray-100 text-center">
+                <p className="text-gray-500 font-medium">No general inquiries found.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredGeneral.map((msg) => (
+                  <div
+                    key={msg._id}
+                    className={`bg-white rounded-3xl p-6 border transition-all duration-300 shadow-sm hover:shadow-md ${
+                      msg.isRead ? "border-gray-200/60" : "border-primary/30 ring-1 ring-primary/5"
+                    }`}
+                  >
+                    {/* Message Header */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-gray-900 text-lg">{msg.name}</h3>
+                          {!msg.isRead && (
+                            <span className="bg-primary text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold tracking-wider">
+                              NEW
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-500 font-semibold mt-1">
+                          Subject: <span className="text-gray-700 capitalize">{msg.subject}</span>
                         </p>
                       </div>
 
-                      {/* Action buttons */}
-                      {!msg.isRead && (
-                        <div className="flex justify-end pt-2">
-                          <button
-                            onClick={() => handleToggleRead(msg._id)}
-                            className="inline-flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-full bg-green-600 hover:bg-green-700 text-white transition shadow-sm cursor-pointer"
-                          >
-                            <FaCheckCircle />
-                            Mark as Read
-                          </button>
+                      <div className="flex items-center gap-4 text-sm text-gray-400">
+                        <span className="flex items-center gap-1.5 font-medium">
+                          <FaCalendarAlt />
+                          {new Date(msg.createdAt).toLocaleString()}
+                        </span>
+                        <button
+                          onClick={() => handleDelete(msg._id)}
+                          className="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-500 hover:text-red-600 transition cursor-pointer"
+                          title="Delete message"
+                        >
+                          <FaTrash className="text-sm" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Message Body & Contact Details */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {/* Left Column: Contact details */}
+                      <div className="bg-gray-50 p-4 rounded-2xl space-y-3 border border-gray-100">
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Sender Info</h4>
+                        <a
+                          href={`mailto:${msg.email}`}
+                          className="flex items-center gap-2.5 text-sm text-gray-600 hover:text-primary transition font-medium"
+                        >
+                          <FaEnvelope className="text-gray-400" />
+                          {msg.email}
+                        </a>
+                        <p className="flex items-center gap-2.5 text-sm text-gray-600 font-medium">
+                          <FaPhoneAlt className="text-gray-400" />
+                          {msg.phone}
+                        </p>
+                      </div>
+
+                      {/* Right Column: Full Message */}
+                      <div className="md:col-span-2 space-y-3">
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Message Content</h4>
+                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100/80 min-h-[80px]">
+                          <p className="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed">
+                            {msg.message || <span className="text-gray-400 italic">No message content provided.</span>}
+                          </p>
                         </div>
-                      )}
+
+                        {/* Action buttons */}
+                        {!msg.isRead && (
+                          <div className="flex justify-end pt-2">
+                            <button
+                              onClick={() => handleToggleRead(msg._id)}
+                              className="inline-flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-full bg-green-600 hover:bg-green-700 text-white transition shadow-sm cursor-pointer"
+                            >
+                              <FaCheckCircle />
+                              Mark as Read
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )
           )}
         </div>
       </div>
