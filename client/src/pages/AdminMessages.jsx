@@ -157,7 +157,7 @@ export default function AdminMessages() {
   }
 
   return (
-    <div className="p-4 md:p-8 pt-24 min-h-screen max-w-7xl mx-auto space-y-8 bg-gray-50">
+    <div className="p-4 md:p-8 pt-36 min-h-screen max-w-7xl mx-auto space-y-8 bg-gray-50">
       
       {/* Header */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
