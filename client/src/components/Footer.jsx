@@ -18,8 +18,8 @@ export default function Footer() {
       <div className="bottom flex justify-between items-center pt-4">
         <div className="left font-semibold text-gray-800 flex items-center gap-2">
           <span>@ 2021 All Rights Reserved.</span>
-          <a href="/admin/login" className="text-[11px] text-gray-300 hover:text-gray-500 font-normal transition-all" title="Portal Access">
-            Admin
+          <a href="/admin/login" className="text-xs text-gray-400 hover:text-primary hover:underline font-normal transition-all" title="Portal Access">
+            | Admin Login
           </a>
         </div>
         <div className="right flex items-center gap-4  ">
