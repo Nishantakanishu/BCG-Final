@@ -16,7 +16,12 @@ export default function Footer() {
         </div>
       </div>
       <div className="bottom flex justify-between items-center pt-4">
-        <div className="left font-semibold text-gray-800">@ 2021 All Rights Reserved.</div>
+        <div className="left font-semibold text-gray-800 flex items-center gap-2">
+          <span>@ 2021 All Rights Reserved.</span>
+          <a href="/admin/login" className="text-[11px] text-gray-300 hover:text-gray-500 font-normal transition-all" title="Portal Access">
+            Admin
+          </a>
+        </div>
         <div className="right flex items-center gap-4  ">
           <a href="/" className="p-2 rounded-full bg-gray-100 text-lg text-gray-800 hover:bg-gray-200">
             <FaFacebook />
