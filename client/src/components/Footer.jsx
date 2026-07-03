@@ -1,6 +1,5 @@
 import Logo from "../assets/Logo.png"
-import { FaFacebook } from "react-icons/fa";
-import { FaTwitter } from "react-icons/fa";
+import { FaLinkedin } from "react-icons/fa";
 
 export default function Footer() {
   return (
@@ -12,7 +11,7 @@ export default function Footer() {
         <div className="right text-gray-900 md:text-right">
           <div className="mobile font-bold text-lg tracking-tighter">+91 7777 012161 </div>
           <div className="email text-sm font-serif">E. connect@brightcg.com</div>
-          <div className="address text-sm font-serif">A. India, Bangladesh, Belgium and Romania</div>
+          <div className="address text-sm font-serif">A. India and Belgium</div>
         </div>
       </div>
       <div className="bottom flex justify-between items-center pt-4">
@@ -23,11 +22,8 @@ export default function Footer() {
           </a>
         </div>
         <div className="right flex items-center gap-4  ">
-          <a href="/" className="p-2 rounded-full bg-gray-100 text-lg text-gray-800 hover:bg-gray-200">
-            <FaFacebook />
-          </a>
-          <a href="/" className="p-2 rounded-full bg-gray-100 text-lg text-gray-800 hover:bg-gray-200" >
-            <FaTwitter />
+          <a href="https://www.linkedin.com/company/bright-citrine-global" target="_blank" rel="noreferrer" className="p-2 rounded-full bg-gray-100 text-lg text-gray-800 hover:bg-gray-200">
+            <FaLinkedin />
           </a>
         </div>
       </div>

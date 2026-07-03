@@ -1,6 +1,6 @@
 import cement from "../assets/cement.jpeg"
 import rice from "../assets/rice.jpg"
-import lamb from "../assets/lamb.webp"
+import shippingLogisticsImg from "../assets/shipping_logistics.png"
 import websiteImg from "../assets/website.png"
 import mobileImg from "../assets/mobile.png"
 import renewableEnergyImg from "../assets/renewable_energy.png"
@@ -9,7 +9,7 @@ import agricultureMachineryImg from "../assets/agriculture_machinery.png"
 export const imageMap = {
   "cement.jpeg": cement,
   "rice.jpg": rice,
-  "lamb.webp": lamb,
+  "shipping_logistics.png": shippingLogisticsImg,
   "website.jpg": websiteImg,
   "mobile.jpg": mobileImg,
   "renewable_energy.png": renewableEnergyImg,
@@ -34,12 +34,12 @@ const products = [
       "Carefully sourced bulk rice from trusted farms and processing units to ensure superior quality and freshness. Processed using modern milling techniques to preserve natural taste, aroma, and nutritional value. Ideal for wholesalers, hotels, caterers, food processing industries, and exporters. Consistent grain size, low breakage, and reliable large-volume availability make it a cost-effective and trusted choice."
   },
   {
-    name: "Fresh Chilled Lamb Meat",
-    url: lamb,
+    name: "Shipping & Logistics",
+    url: shippingLogisticsImg,
     shortDesc:
-      "Hygienically processed fresh lamb meat supplied with cold-chain assurance.",
+      "End-to-end freight forwarding, cargo handling, and global logistics solutions.",
     longDesc:
-      "Freshly processed and chilled lamb meat handled under strict hygienic and temperature-controlled conditions. Maintains natural tenderness, juiciness, and authentic flavor while meeting food safety standards. Suitable for restaurants, meat distributors, catering businesses, and export markets. Bulk supply with proper cold-chain handling ensures freshness, quality, and customer satisfaction."
+      "Comprehensive shipping and logistics services covering sea freight, air freight, land transport, and multimodal solutions. We manage the entire supply chain from origin to destination, including customs clearance, warehousing, cargo tracking, and last-mile delivery. Our global network of carriers and freight partners ensures timely, cost-effective, and secure delivery of goods across international markets. Trusted by businesses for reliable documentation, compliance handling, and transparent communication throughout the shipping process."
   },
   {
     name: "Renewable Energy Solutions",
