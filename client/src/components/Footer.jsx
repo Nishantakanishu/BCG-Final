@@ -10,8 +10,8 @@ export default function Footer() {
         </div>
         <div className="right text-gray-900 md:text-right">
           <div className="mobile font-bold text-lg tracking-tighter">+91 7777 012161 </div>
-          <div className="email text-sm font-serif">E. connect@brightcg.com</div>
-          <div className="address text-sm font-serif">A. India and Belgium</div>
+          <div className="email text-sm font-serif">E. ops@brightcg.com</div>
+          <div className="address text-sm font-serif">A. India, Belgium and UAE</div>
         </div>
       </div>
       <div className="bottom flex justify-between items-center pt-4">

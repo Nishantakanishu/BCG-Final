@@ -30,8 +30,8 @@ export default function Contact() {
           <ContactCard
             icon={<FaEnvelope className="text-blue-600" />}
             title="Email"
-            value="connect@brightcg.com"
-            href="mailto:connect@brightcg.com"
+            value="ops@brightcg.com"
+            href="mailto:ops@brightcg.com"
           />
 
 
@@ -46,7 +46,7 @@ export default function Contact() {
           <ContactCard
             icon={<FaMapMarkerAlt className="text-red-500" />}
             title="Our Presence"
-            value="India and Belgium"
+            value="India, Belgium and UAE"
           />
         </div>
       </section>

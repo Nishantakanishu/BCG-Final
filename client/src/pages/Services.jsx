@@ -56,8 +56,8 @@ export default function Services() {
         </motion.div>
         <div className="email flex justify-center items-center gap-1 text-lg md:text-xl mt-1">
           <MdOutlineMail />
-          <a className='font-semibold ' href="mailto:connect@brightcg.com">
-            connect@brightcg.com
+          <a className='font-semibold ' href="mailto:ops@brightcg.com">
+            ops@brightcg.com
           </a>
         </div>
       </section>
