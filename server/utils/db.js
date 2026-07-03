@@ -25,7 +25,7 @@ const seedDatabase = async () => {
     if (productCount === 0) {
       const initialProducts = [
         {
-          name: "Chinker & Cement",
+          name: "Clinker & Cement",
           url: "cement.jpeg", // Using static string mapping to frontend assets
           shortDesc: "High-strength clinker and cement for reliable large-scale construction projects.",
           longDesc: "High-performance clinker and cement manufactured under strict quality control standards to meet the demands of modern construction. Offers excellent binding strength, durability, and resistance to harsh weather conditions. Widely used in residential buildings, commercial structures, road construction, and infrastructure projects. Available in bulk quantities with consistent quality to support uninterrupted project execution."

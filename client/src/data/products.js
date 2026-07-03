@@ -18,7 +18,7 @@ export const imageMap = {
 
 const products = [
   {
-    name: "Chinker & Cement",
+    name: "Clinker & Cement",
     url: cement,
     shortDesc:
       "High-strength clinker and cement for reliable large-scale construction projects.",
