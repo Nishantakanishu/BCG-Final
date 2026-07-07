@@ -10,8 +10,19 @@ const productRoute = require("./product/product.route")
 const app = express()
 const PORT = 3000
 app.use(express.json())
+const allowedOrigins = process.env.FRONTEND_URI
+  ? process.env.FRONTEND_URI.split(",").map(s => s.trim())
+  : [];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URI,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   credentials: true
 }))
