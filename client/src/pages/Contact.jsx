@@ -46,7 +46,7 @@ export default function Contact() {
           <ContactCard
             icon={<FaMapMarkerAlt className="text-red-500" />}
             title="Our Presence"
-            value="India, Belgium and UAE"
+            value="India, Germany, Belgium and UAE"
           />
         </div>
       </section>
