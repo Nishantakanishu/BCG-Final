@@ -1,12 +1,16 @@
-import Logo from "../assets/Logo.png"
+const Logo = "/cropped_circle_image-2.png";
 import { FaLinkedin } from "react-icons/fa";
 
 export default function Footer() {
   return (
     <footer className="py-15 px-5 md:px-10">
       <div className="top flex flex-col gap-2 md:gap-5 md:flex-row md:justify-between">
-        <div className="left">
-          <img className=" w-40 md:w-52 " src={Logo} alt="logo" />
+        <div className="left flex items-center gap-3">
+          <img className=" w-16 h-16 md:w-20 md:h-20 object-contain " src={Logo} alt="Bright Citrine Global logo" />
+          <div className="flex flex-col">
+            <span className="font-serif font-bold text-xl md:text-2xl text-navy leading-none">Bright Citrine</span>
+            <span className="font-serif font-semibold text-xs md:text-sm text-primary tracking-widest uppercase mt-1">Global</span>
+          </div>
         </div>
         <div className="right text-gray-900 md:text-right">
           <div className="mobile font-bold text-lg tracking-tighter">+91 7777 012161 </div>

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import navLinks from "../data/navLink"
 import { NavLink } from "react-router-dom";
-import logo from "../assets/Logo.png"
+const logo = "/cropped_circle_image-2.png";
 import { motion } from "motion/react"
 import { useContextStore } from "../store/ContextStore";
 import { FaEnvelopeOpenText } from "react-icons/fa";
@@ -46,9 +46,13 @@ export default function Navbar() {
             <div className="line w-6 h-0.75 bg-primary m-1.5"></div>
           </div>
           <NavLink to="/" >
-            <div className="logo flex justify-center items-center gap-2 ">
-              <div className="w-32 h-11">
-                <img className="w-full h-full rounded-full" src={logo} alt="" />
+            <div className="logo flex justify-center items-center gap-3 ">
+              <div className="w-12 h-12 md:w-14 md:h-14">
+                <img className="w-full h-full object-contain" src={logo} alt="Bright Citrine Global" />
+              </div>
+              <div className="flex flex-col justify-center">
+                <span className="font-bold text-base md:text-lg text-navy font-serif leading-none">Bright Citrine</span>
+                <span className="font-semibold text-[10px] md:text-xs text-primary uppercase tracking-widest mt-0.5">Global</span>
               </div>
             </div>
           </NavLink>
@@ -101,9 +105,13 @@ export default function Navbar() {
           id="menu"
           className="absolute -top-2 -left-72  bg-white  w-60 h-screen border border-gray-400 shadow-xl transition-all duration-700 ease-in-out md:hidden z-50"
         >
-          <div className="logo flex justify-center border-b border-b-red-600 py-4 ">
-            <div className=" w-44">
-              <img className="w-full rounded-full" src={logo} alt="" />
+          <div className="logo flex flex-col items-center border-b border-b-orange-200 py-5 gap-2">
+            <div className="w-20 h-20">
+              <img className="w-full h-full object-contain" src={logo} alt="Bright Citrine Global Logo" />
+            </div>
+            <div className="text-center">
+              <span className="font-bold text-lg text-navy font-serif block leading-none">Bright Citrine</span>
+              <span className="font-semibold text-xs text-primary uppercase tracking-widest mt-1 block">Global</span>
             </div>
           </div>
           <nav>
@@ -112,7 +120,7 @@ export default function Navbar() {
                 <li key={name}>
                   <NavLink
                     to={link}
-                    className={({ isActive }) => `${isActive ? "bg-red-200  font-normal" : "font-semibold "} text-xs py-4 px-2 cursor-pointer text-primary  border-b border-red-200 flex gap-3 items-center`}
+                    className={({ isActive }) => `${isActive ? "bg-orange-100  font-normal" : "font-semibold "} text-xs py-4 px-2 cursor-pointer text-primary  border-b border-orange-100 flex gap-3 items-center`}
                   >
                     <Icon size={18} />
                     {name}
@@ -123,7 +131,7 @@ export default function Navbar() {
               <li>
                 <NavLink
                   to="/admin/messages"
-                  className={({ isActive }) => `${isActive ? "bg-red-200  font-normal" : "font-semibold "} text-xs py-4 px-2 cursor-pointer text-primary  border-b border-red-200 flex gap-3 items-center`}
+                  className={({ isActive }) => `${isActive ? "bg-orange-100  font-normal" : "font-semibold "} text-xs py-4 px-2 cursor-pointer text-primary  border-b border-orange-100 flex gap-3 items-center`}
                 >
                   <FaEnvelopeOpenText size={18} />
                   Messages
